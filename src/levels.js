@@ -54,8 +54,8 @@ export function buildLevel(game, level) {
 			if (level[i][j] == 1) {
 				bricks.push(
 					new Brick(game, {
-						x : j * 100,
-						y : 36 + i * 36
+						x : j * game.gameWidth/7,
+						y : 36/600*game.gameHeight + i * 36/600*game.gameHeight
 					})
 				);
 			}

@@ -3,8 +3,8 @@ import Game from './game.js';
 let canvas = document.getElementById('gameScreen');
 let ctx = canvas.getContext('2d');
 
-const GAME_WIDTH = 700;
-const GAME_HEIGHT = 600;
+const GAME_WIDTH = 1000;
+const GAME_HEIGHT = 800;
 
 let lastTime = 0;
 
