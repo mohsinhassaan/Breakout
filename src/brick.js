@@ -1,12 +1,11 @@
-import detectCollision from './collisionDetection.js';
+import mangeCollision from './collisionDetection.js';
+import GameObject from './gameObject.js';
 
-export default class Brick {
+export default class Brick extends GameObject {
 	constructor(game, position) {
-		this.game = game;
+		super(game, position);
 
 		this.markedForDeletion = false;
-
-		this.position = position;
 
 		this.width = 100;
 		this.height = 36;
@@ -19,8 +18,7 @@ export default class Brick {
 	}
 
 	update(deltaTime) {
-		if (detectCollision(this.game.ball, this)) {
-			this.game.ball.speed.y *= -1;
+		if (mangeCollision(this.game.ball, this)) {
 			this.markedForDeletion = true;
 		}
 	}

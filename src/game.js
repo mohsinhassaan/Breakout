@@ -4,10 +4,11 @@ import Ball from './ball.js';
 import { buildLevel, levels } from './levels.js';
 
 const GAMESTATE = {
-	PAUSED   : 0,
-	RUNNING  : 1,
-	MENU     : 2,
-	GAMEOVER : 3
+	PAUSED    : 0,
+	RUNNING   : 1,
+	MENU      : 2,
+	GAMEOVER  : 3,
+	LAUNCHING : 4
 };
 
 export default class Game {
@@ -22,7 +23,7 @@ export default class Game {
 
 		this.paddle = new Paddle(this);
 		this.ball = new Ball(this);
-		new InputHandler(this.paddle, this);
+		new InputHandler(this);
 
 		this.currLevel = 0;
 		// this.bricks = buildLevel(this, levels[this.currLevel]);
@@ -35,12 +36,12 @@ export default class Game {
 
 		this.paddle = new Paddle(this);
 		this.ball = new Ball(this);
-		new InputHandler(this.paddle, this);
+		new InputHandler(this);
 	}
 
 	start() {
 		if (this.gamestate !== GAMESTATE.MENU) return;
-		this.gamestate = GAMESTATE.RUNNING;
+		this.gamestate = GAMESTATE.LAUNCHING;
 		this.bricks = buildLevel(this, levels[this.currLevel]);
 		this.gameObjects = [ this.paddle, this.ball, ...this.bricks ];
 	}
@@ -52,11 +53,9 @@ export default class Game {
 	togglePause() {
 		if (this.gamestate === GAMESTATE.PAUSED) {
 			this.gamestate = GAMESTATE.RUNNING;
-		}
-		else if (this.gamestate === GAMESTATE.RUNNING) {
+		} else if (this.gamestate === GAMESTATE.RUNNING) {
 			this.gamestate = GAMESTATE.PAUSED;
-		}
-		else {
+		} else {
 			return;
 		}
 	}
@@ -64,13 +63,40 @@ export default class Game {
 	reset() {
 		this.ball.reset();
 		this.paddle.reset();
+		this.gamestate = GAMESTATE.LAUNCHING;
 	}
 
 	nextLevel() {
 		this.currLevel += 1;
-		if (levels.currLevel === 5) this.gameover();
+		if (!levels[this.currLevel]) {
+			this.gamestate = GAMESTATE.GAMEOVER;
+			return;
+		}
 		this.bricks = buildLevel(this, levels[this.currLevel]);
 		this.reset();
+	}
+
+	left() {
+		if (this.gamestate === GAMESTATE.RUNNING) {
+			this.paddle.moveLeft();
+		} else if (this.gamestate === GAMESTATE.LAUNCHING && this.ball.launchSpeed.x >= -5) {
+			this.ball.launchSpeed.x -= 0.2;
+		}
+	}
+
+	right() {
+		if (this.gamestate === GAMESTATE.RUNNING) {
+			this.paddle.moveRight();
+		} else if (this.gamestate === GAMESTATE.LAUNCHING && this.ball.launchSpeed.x <= 5) {
+			this.ball.launchSpeed.x += 0.2;
+		}
+	}
+
+	launch() {
+		if (this.gamestate === GAMESTATE.LAUNCHING) {
+			this.ball.launch();
+			this.gamestate = GAMESTATE.RUNNING;
+		}
 	}
 
 	update(deltaTime) {
@@ -84,6 +110,7 @@ export default class Game {
 
 		if (!this.bricks.length) {
 			this.nextLevel();
+			this.gamestate = GAMESTATE.LAUNCHING;
 		}
 
 		if (this.lives === 0) this.gameover();

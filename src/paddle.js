@@ -1,28 +1,28 @@
-export default class Paddle {
+import GameObject from './gameObject.js';
+
+export default class Paddle extends GameObject {
 	constructor(game) {
-		this.game = game;
+		const width = 150;
+		const height = 30;
 
-		this.gameWidth = game.gameWidth;
-		this.gameHeight = game.gameHeight;
+		super(game, {
+			x : game.gameWidth / 2 - width / 2,
+			y : game.gameHeight - height - 10
+		});
 
-		this.width = 150;
-		this.height = 30;
+		this.width = width;
+		this.height = height;
 
 		this.maxSpeed = 5;
 		this.speed = 0;
-
-		this.position = {
-			x : this.gameWidth / 2 - this.width / 2,
-			y : this.gameHeight - this.height - 10
-		};
 	}
 
 	reset() {
 		this.speed = 0;
 
 		this.position = {
-			x : this.gameWidth / 2 - this.width / 2,
-			y : this.gameHeight - this.height - 10
+			x : this.game.gameWidth / 2 - this.width / 2,
+			y : this.game.gameHeight - this.height - 10
 		};
 	}
 
@@ -46,6 +46,6 @@ export default class Paddle {
 	update(deltaTime) {
 		this.position.x += this.speed;
 		if (this.position.x < 0) this.position.x = 0;
-		if (this.position.x + this.width > this.gameWidth) this.position.x = this.gameWidth - this.width;
+		if (this.position.x + this.width > this.game.gameWidth) this.position.x = this.game.gameWidth - this.width;
 	}
 }
